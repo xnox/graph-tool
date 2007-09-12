@@ -1,10 +1,10 @@
 // graph-tool -- a general graph modification and manipulation thingy
 //
-// Copyright (C) 2006  Tiago de Paula Peixoto <tiago@forked.de>
+// Copyright (C) 2007  Tiago de Paula Peixoto <tiago@forked.de>
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
+// as published by the Free Software Foundation; either version 3
 // of the License, or (at your option) any later version.
 //
 // This program is distributed in the hope that it will be useful,
@@ -39,6 +39,36 @@
 #ifndef NO_PYTHON_FILTERING
 #include "graph_python_filtering.hh"
 #endif
+
+// some additional functions...
+namespace boost
+{
+//==============================================================================
+// vertex(i, filtered_graph<G>)
+//==============================================================================
+template <class Graph, class EdgePredicate, class VertexPredicate> 
+typename graph_traits<filtered_graph<Graph,EdgePredicate,VertexPredicate> >::vertex_descriptor
+vertex(size_t i, const filtered_graph<Graph,EdgePredicate,VertexPredicate>& g)
+{
+    typename graph_traits<Graph>::vertex_descriptor v = vertex(i, g.m_g);
+    if (g.m_vertex_pred(v))
+        return v;
+    else
+        return graph_traits<Graph>::null_vertex();
+}
+
+//==============================================================================
+// vertex(i, reverse_graph<G>)
+//==============================================================================
+template <class Graph> 
+typename graph_traits<reverse_graph<Graph> >::vertex_descriptor
+vertex(size_t i, const reverse_graph<Graph>& g)
+{
+    return vertex(i, g.m_g);
+}
+
+} // namespace boost
+
 
 namespace graph_tool
 {
